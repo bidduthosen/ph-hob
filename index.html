@@ -3,10 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ph hob</title>
+    <title>Ph Hob</title>
     <!-- tailwind and daisy ui link -->
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.7.2/dist/full.min.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <script src="https://kit.fontawesome.com/45f7665e19.js" crossorigin="anonymous"></script>
 </head>
 <body>
     <header class="container mx-auto px-5">
@@ -17,7 +19,7 @@
               </div>
             </div>
             <div class="navbar-center">
-              <a class="btn btn-outline btn-secondary text-xl">Short by view</a>
+              <a id="sort-btn" class="btn btn-outline btn-secondary text-xl">Short by view</a>
             </div>
             <div class="navbar-end">
               <button class="btn btn-ghost btn-circle">
@@ -41,10 +43,18 @@
                 <button class="btn">Normal</button> -->
             </div>
         </section>
-        <section class="mt-6">
+        <section class="mt-6 mb-7">
             <div id="categories-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 
             </div>
+        </section>
+
+        <!-- categories no data show this container -->
+        <section id="no-category-container" class="hidden">
+          <div class="flex flex-col items-center ">
+            <img src="./image/Icon.png" alt="">
+            <h1 class="text-2xl">Opss!! There are no data for this categories</h1>
+          </div>
         </section>
     </main>
     <script src="./script/script.js"></script>

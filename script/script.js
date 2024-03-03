@@ -1,5 +1,10 @@
 const btnContainer = document.getElementById('btn-container');
 const categoriesContainer = document.getElementById('categories-container');
+const noCategoriesContainer = document.getElementById('no-category-container');
+const categoryButton = document.getElementsByClassName('category-button');
+const sortBtn = document.getElementById('sort-btn');
+
+// console.log(categoryButton)
 
 
 const loadFetch = async() =>{
@@ -13,10 +18,16 @@ const displayLoadCategory = (category) =>{
     category.forEach(categoryBtn => {
         const {category, category_id} = categoryBtn
         const newBtn = document.createElement('button');
-        newBtn.classList.add('btn');
+        newBtn.classList.add('btn', 'category-button');
         newBtn.innerText = `${category}`;
 
-        newBtn.addEventListener('click', () => categoryDataLoad(category_id));
+        newBtn.addEventListener('click', () => {
+            for(let categoryBtn of categoryButton){
+                categoryBtn.classList.remove('bg-red-400');
+            }
+            newBtn.classList.add('bg-red-400');
+            categoryDataLoad(category_id)
+        });
         btnContainer.appendChild(newBtn);
     })
 }
@@ -25,23 +36,54 @@ const displayLoadCategory = (category) =>{
 // by default category id selected
 let selectCategoryId = 1001;
 
-const categoryDataLoad = async(categoryId) =>{
+let sortByView = false;
+
+sortBtn.addEventListener('click', ()=>{
+    sortByView = true;
+    categoryDataLoad(selectCategoryId, sortByView)
+    
+})
+
+
+const categoryDataLoad = async(categoryId, sortByView) =>{
 
     selectCategoryId = categoryId;
 
     const url = `https://openapi.programming-hero.com/api/videos/category/${categoryId}`;
     const res = await fetch(url);
     const {data} = await res.json();
-    categoryDataLoadDisplay(data);
+    categoryDataLoadDisplay(data, sortByView);
 }
 
 
-const categoryDataLoadDisplay = (categoriesData) =>{
+const categoryDataLoadDisplay = (categoriesData, sortByView) =>{
     categoriesContainer.textContent = "";
+    if(sortByView){
+        categoriesData.sort((a, b)=> {
+            const totalViewFirstStr = a.others?.views;
+            const totalViewFSecondStr = b.others?.views;
+            const totalViewFirstNumber= parseFloat(totalViewFirstStr.replace("k", '')) || 0;
+            const totalViewFSecondNumber = parseFloat(totalViewFSecondStr.replace("k", '')) || 0;
+            
+            return totalViewFSecondNumber - totalViewFirstNumber;
+        })
+    }
 
+    if(categoriesData.length === 0){
+        noCategoriesContainer.classList.remove('hidden')
+    }
+    else{
+        noCategoriesContainer.classList.add('hidden')
+    }
+    
     categoriesData.forEach(card =>{
         const {title, thumbnail, others} = card;
-        console.log(card)
+
+
+        let verifiedBadge = '';
+        if(card.authors[0].verified){
+            verifiedBadge = `<i class="fa-solid fa-certificate text-blue-800"></i>`;
+        }
         const newCard = document.createElement('div');
         newCard.className = 'card  bg-base-100 shadow-xl';
         newCard.innerHTML = `
@@ -55,7 +97,7 @@ const categoryDataLoadDisplay = (categoriesData) =>{
                     </div>
                     <div>
                         <div class="pl-4 text-xl font-bold">${title}</div>
-                        <div class="pl-4 text-sm font-bold">${card?.authors[0]?.profile_name}</div>
+                        <div class="pl-4 text-sm font-bold">${card?.authors[0]?.profile_name} ${verifiedBadge} ${card.authors[0].verified ? '<i class="fa-solid fa-certificate text-blue-800"></i>' : ''}</div>
                     </div>
                 </h2>
                 <div class="card-actions justify-end">
@@ -71,4 +113,4 @@ const categoryDataLoadDisplay = (categoriesData) =>{
 
 
 loadFetch();
-categoryDataLoad(selectCategoryId);
+categoryDataLoad(selectCategoryId, sortByView);
